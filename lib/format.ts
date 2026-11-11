@@ -22,10 +22,31 @@ export function roleHeading(role: Pick<RoleInput, "title" | "organization">): st
 }
 
 /**
+ * Turns the `CHAT_URL` env var into an absolute URL. A value without a scheme
+ * (`chat.example.com`) gets `https://`, since a bare host would be a relative link. Anything
+ * that is not an http(s) URL throws, so a bad value fails the build instead of shipping a broken
+ * link.
+ */
+export function absoluteUrl(value: string): string {
+  const trimmed = value.trim();
+  const withScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  let url: URL;
+  try {
+    url = new URL(withScheme);
+  } catch {
+    throw new Error(`CHAT_URL is not a valid URL: "${value}"`);
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") {
+    throw new Error(`CHAT_URL must use http or https: "${value}"`);
+  }
+  return url.href;
+}
+
+/**
  * Chat first when `chatUrl` is set (from the `CHAT_URL` env var), then the profile's links in
  * order, minus the link to this website.
  */
 export function headerLinks(links: ExternalLink[] = [], chatUrl?: string): ExternalLink[] {
-  const chat: ExternalLink[] = chatUrl ? [{ label: "Chat", url: chatUrl }] : [];
+  const chat: ExternalLink[] = chatUrl?.trim() ? [{ label: "Chat", url: absoluteUrl(chatUrl) }] : [];
   return [...chat, ...links.filter((link) => link.label !== "Website")];
 }

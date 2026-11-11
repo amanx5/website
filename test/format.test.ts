@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDateRange, formatPartialDate, headerLinks, roleHeading } from "@/lib/format";
+import { absoluteUrl, formatDateRange, formatPartialDate, headerLinks, roleHeading } from "@/lib/format";
 
 describe("formatPartialDate", () => {
   it("formats YYYY-MM as a short month and year", () => {
@@ -53,5 +53,23 @@ describe("headerLinks", () => {
 
   it("shows Chat alone when the profile has no links", () => {
     expect(headerLinks(undefined, chatUrl)).toEqual([chat]);
+  });
+
+  it("makes a chat URL without a scheme absolute", () => {
+    expect(headerLinks([], "chat.example.com")).toEqual([chat]);
+    expect(headerLinks([], "  chat.example.com/  ")).toEqual([chat]);
+  });
+});
+
+describe("absoluteUrl", () => {
+  it("keeps an http(s) URL", () => {
+    expect(absoluteUrl("https://chat.example.com/x")).toBe("https://chat.example.com/x");
+    expect(absoluteUrl("http://localhost:3001")).toBe("http://localhost:3001/");
+  });
+
+  it("rejects values that are not web URLs", () => {
+    expect(() => absoluteUrl("ftp://chat.example.com")).toThrow(/http or https/);
+    expect(() => absoluteUrl("javascript:alert(1)")).toThrow(/CHAT_URL/);
+    expect(() => absoluteUrl("not a url")).toThrow(/not a valid URL/);
   });
 });
