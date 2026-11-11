@@ -41,6 +41,7 @@ describe("fetchProfileText", () => {
     expect(init?.headers).toMatchObject({
       Accept: "application/vnd.github.raw+json",
       Authorization: "Bearer test-token",
+      "User-Agent": "profile-site",
     });
     expect((init as RequestInit & { next?: { revalidate?: number } }).next).toEqual({ revalidate: 3600 });
   });
@@ -59,8 +60,10 @@ describe("fetchProfileText", () => {
   });
 
   it("throws on a non-2xx response", async () => {
-    fetchMock.mockResolvedValue(new Response("Bad credentials", { status: 401, statusText: "Unauthorized" }));
-    await expect(fetchProfileText()).rejects.toThrow("401");
+    fetchMock.mockResolvedValue(
+      new Response('{"message":"Bad credentials"}', { status: 401, statusText: "Unauthorized" }),
+    );
+    await expect(fetchProfileText()).rejects.toThrow(/401 Unauthorized .*Bad credentials/);
   });
 
   it("throws on malformed JSON", async () => {

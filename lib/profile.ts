@@ -36,11 +36,15 @@ export async function fetchProfileText(): Promise<string> {
       Accept: "application/vnd.github.raw+json",
       Authorization: `Bearer ${token}`,
       "X-GitHub-Api-Version": "2022-11-28",
+      // GitHub rejects requests without a User-Agent with 403; don't rely on the runtime's default.
+      "User-Agent": "profile-site",
     },
     next: { revalidate: PROFILE_REVALIDATE_SECONDS },
   });
   if (!response.ok) {
-    throw new Error(`Fetching profile.json failed: ${response.status} ${response.statusText}`);
+    // GitHub's error body says why (bad credentials, missing access, rate limit); it holds no secrets.
+    const detail = (await response.text()).slice(0, 300);
+    throw new Error(`Fetching profile.json failed: ${response.status} ${response.statusText} ${detail}`.trim());
   }
 
   const text = await response.text();
