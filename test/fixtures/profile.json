@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "identity": {
+    "name": "Ada Example",
+    "headline": "Software Engineer",
+    "summary": "Synthetic profile used by the website's tests.",
+    "location": "Example City"
+  },
+  "links": [
+    { "label": "Website", "url": "https://www.example.com/" },
+    { "label": "GitHub", "url": "https://github.example.com/ada" }
+  ],
+  "experience": [
+    {
+      "id": "independent",
+      "organization": "Independent",
+      "title": "Independent Software Engineer",
+      "start": "2025-11",
+      "summary": "Building open-source libraries.",
+      "highlights": [],
+      "links": [],
+      "skills": []
+    },
+    {
+      "id": "example-corp",
+      "organization": "Example Corp",
+      "title": "Software Engineer",
+      "start": "2024-01",
+      "end": "2025-10",
+      "summary": "Worked on internal tools.",
+      "highlights": ["Built a reporting dashboard.", "Maintained the visitor check-in flow."],
+      "links": [{ "label": "Product", "url": "https://product.example.com/" }],
+      "skills": []
+    }
+  ],
+  "projects": [
+    {
+      "id": "first-project",
+      "name": "First Project",
+      "description": "A library with a demo.",
+      "roleId": "independent",
+      "links": [
+        { "label": "Demo", "url": "https://demo.example.com/" },
+        { "label": "Code", "url": "https://code.example.com/first-project" }
+      ]
+    },
+    {
+      "id": "second-project",
+      "name": "Second Project",
+      "description": "A learning project."
+    }
+  ],
+  "skills": [],
+  "education": []
+}

@@ -1,0 +1,65 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fbfbfa;
+  --text: #1a1a19;
+  --muted: #6e6e69;
+  --line: #e6e6e2;
+  --accent: #2f5fd0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131312;
+    --text: #ebebe7;
+    --muted: #96968f;
+    --line: #292926;
+    --accent: #8eabf0;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main { max-width: 640px; margin: 0 auto; padding: 96px 24px 64px; }
+
+h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+h2 {
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 12px;
+}
+h3 { font-size: 1rem; font-weight: 500; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+ul { list-style: none; }
+.muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
+
+header .muted { margin-top: 4px; }
+.summary { margin-top: 20px; }
+.links { display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 20px; }
+
+section { margin-top: 64px; }
+.entries > li { padding: 20px 0; border-top: 1px solid var(--line); }
+.entries > li:last-child { border-bottom: 1px solid var(--line); }
+.entry-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 16px; }
+.entries p { margin-top: 4px; color: var(--muted); font-size: 0.95rem; }
+.highlights { margin-top: 6px; color: var(--muted); font-size: 0.95rem; }
+.highlights li { position: relative; padding-left: 16px; }
+.highlights li::before { content: "–"; position: absolute; left: 0; }
+.entry-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 0.875rem; }
+
+footer { margin-top: 64px; }
+
+@media (max-width: 480px) {
+  main { padding: 56px 16px 40px; }
+  section { margin-top: 48px; }
+}
