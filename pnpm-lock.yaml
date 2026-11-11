@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@promptfolio/core':
+        specifier: file:vendor/promptfolio-core-e65256a.tgz
+        version: file:vendor/promptfolio-core-e65256a.tgz
+      '@promptfolio/source-remote':
+        specifier: file:vendor/promptfolio-source-remote-e65256a.tgz
+        version: file:vendor/promptfolio-source-remote-e65256a.tgz
       next:
         specifier: 16.4.6
         version: 16.4.6(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -21,9 +27,6 @@ importers:
         specifier: 0.0.1
         version: 0.0.1
     devDependencies:
-      '@promptfolio/core':
-        specifier: file:vendor/promptfolio-core-b2eb73e.tgz
-        version: file:vendor/promptfolio-core-b2eb73e.tgz
       '@types/node':
         specifier: ^24
         version: 24.19.2
@@ -275,8 +278,13 @@ packages:
   '@oxc-project/types@0.156.0':
     resolution: {integrity: sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw==}
 
-  '@promptfolio/core@file:vendor/promptfolio-core-b2eb73e.tgz':
-    resolution: {integrity: sha512-Ob64+9RKDcvwW+kMLkWMkZa7l7dpInLoQlSTVjNoAhCTvEZlHIRBv3KF7dGS8mKNqS4S9RxQCuDkDgXB9NWMYw==, tarball: file:vendor/promptfolio-core-b2eb73e.tgz}
+  '@promptfolio/core@file:vendor/promptfolio-core-e65256a.tgz':
+    resolution: {integrity: sha512-ugVPWZMP5ETv3ay7GTHOaAtElJYRac0Kpv4DzRyaHsAWAlfEiVmMLIjCAeItse3SxxWnxLEAOBni8pcx7S/vng==, tarball: file:vendor/promptfolio-core-e65256a.tgz}
+    version: 0.0.3
+    engines: {node: '>=22'}
+
+  '@promptfolio/source-remote@file:vendor/promptfolio-source-remote-e65256a.tgz':
+    resolution: {integrity: sha512-tY2fmEiqcA6Cdxygxa6w80UHqx5XvlSKq3BK8uNr1GkFg/halPmPpKtjjcoj/SPhEwMoNDtTXzZ1Epxjwil5qg==, tarball: file:vendor/promptfolio-source-remote-e65256a.tgz}
     version: 0.0.3
     engines: {node: '>=22'}
 
@@ -908,9 +916,11 @@ snapshots:
 
   '@oxc-project/types@0.156.0': {}
 
-  '@promptfolio/core@file:vendor/promptfolio-core-b2eb73e.tgz':
+  '@promptfolio/core@file:vendor/promptfolio-core-e65256a.tgz':
     dependencies:
       zod: 4.6.7
+
+  '@promptfolio/source-remote@file:vendor/promptfolio-source-remote-e65256a.tgz': {}
 
   '@rolldown/binding-android-arm-eabi@1.2.18':
     optional: true

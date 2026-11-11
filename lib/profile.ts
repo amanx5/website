@@ -1,5 +1,6 @@
 import "server-only";
-import type { ProfileInput } from "@promptfolio/core";
+import { findContactDetails, loadStructuredProfile, type Profile, type ProfileIssue } from "@promptfolio/core";
+import { fetchRemoteProfile } from "@promptfolio/source-remote";
 
 /**
  * The store's validated branch. A constant on purpose: without `?ref=`, GitHub serves the
@@ -20,39 +21,60 @@ export function profileUrl(repo: string): string {
   return `https://api.github.com/repos/${repo}/contents/profile.json?ref=${PROFILE_REF}`;
 }
 
+/** The store's file as parsed JSON, and the validated profile made from it. */
+export interface LoadedProfile {
+  data: unknown;
+  profile: Profile;
+}
+
 /**
- * Fetches `profile.json` as text. The JSON is not validated here: the store's CI is the only
- * validation. Every failure throws, so Next.js keeps serving the last good page and data
- * instead of caching an error (it caches only 200 responses).
+ * Fetches `profile.json` from the store and checks it again here, as a second line of defence
+ * behind the store's CI: it must be a valid profile, and no text may look like contact details.
+ *
+ * Every failure throws, so Next.js keeps serving the last good page and data instead of caching an
+ * error (its data cache keeps only 200 responses, and a failed revalidation keeps the stale page).
  */
-export async function fetchProfileText(): Promise<string> {
+export async function loadProfile(): Promise<LoadedProfile> {
   const repo = process.env.PROFILE_STORE_REPO;
   const token = process.env.PROFILE_STORE_TOKEN;
   if (!repo) throw new Error("PROFILE_STORE_REPO is not set");
   if (!token) throw new Error("PROFILE_STORE_TOKEN is not set");
 
-  const response = await fetch(profileUrl(repo), {
+  const fetched = await fetchRemoteProfile({
+    url: profileUrl(repo),
     headers: {
       Accept: "application/vnd.github.raw+json",
       Authorization: `Bearer ${token}`,
       "X-GitHub-Api-Version": "2022-11-28",
-      // GitHub rejects requests without a User-Agent with 403; don't rely on the runtime's default.
-      "User-Agent": "profile-site",
     },
-    next: { revalidate: PROFILE_REVALIDATE_SECONDS },
+    userAgent: "profile-site",
+    // Adds Next.js's data cache to the package's request; the package sets the headers and signal.
+    fetch: (input, init) =>
+      fetch(input, { ...init, next: { revalidate: PROFILE_REVALIDATE_SECONDS } }),
   });
-  if (!response.ok) {
-    // GitHub's error body says why (bad credentials, missing access, rate limit); it holds no secrets.
-    const detail = (await response.text()).slice(0, 300);
-    throw new Error(`Fetching profile.json failed: ${response.status} ${response.statusText} ${detail}`.trim());
+  if (!fetched.ok) throw new Error(`Fetching profile.json failed: ${fetched.error.message}`);
+
+  const loaded = loadStructuredProfile(fetched.data, {
+    sourceId: "profile-store",
+    label: "Profile store",
+    observedAt: fetched.fetchedAt,
+  });
+  if (!loaded.ok) throw new Error(`profile.json is not a valid profile: ${describe(loaded.issues)}`);
+
+  const contact = findContactDetails(fetched.data);
+  if (contact.length > 0) {
+    throw new Error(`profile.json has text that looks like contact details: ${describe(contact)}`);
   }
 
-  const text = await response.text();
-  JSON.parse(text); // a malformed file throws here rather than being served
-  return text;
+  return { data: fetched.data, profile: loaded.profile };
 }
 
-/** The profile, parsed and trusted as `ProfileInput`. */
-export async function getProfile(): Promise<ProfileInput> {
-  return JSON.parse(await fetchProfileText()) as ProfileInput;
+/** The validated profile. */
+export async function getProfile(): Promise<Profile> {
+  return (await loadProfile()).profile;
+}
+
+/** Paths and messages only: an issue never repeats the text it found. */
+function describe(issues: ProfileIssue[]): string {
+  return issues.map((issue) => `${issue.path || "(root)"}: ${issue.message}`).join("; ");
 }
