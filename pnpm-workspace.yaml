@@ -1,0 +1,5 @@
+# pnpm's minimumReleaseAge check looks each package up on npm. The vendored Promptfolio tarballs
+# include @promptfolio/source-remote, which is not on npm yet, so the check fails on Vercel.
+# Promptfolio is our own library, so it is excluded from the age check.
+minimumReleaseAgeExclude:
+  - '@promptfolio/*'
